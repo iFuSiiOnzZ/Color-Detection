@@ -1,16 +1,17 @@
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public final class rgbMeans extends kmeansCLass {
     
-    private rgbClass[] rgbClusters = null;
+    private Color[] rgbClusters = null;
     
     public rgbMeans (int iTer, int nClusters, BufferedImage bImg)
     {
         super(iTer, nClusters, bImg);
-        this.rgbClusters = new rgbClass[this.nClusters];
+        this.rgbClusters = new Color[this.nClusters];
     }
     
-    public rgbClass[] getClusters ()
+    public Color[] getClusters ()
     {
         return (this.rgbClusters);
     }
@@ -31,20 +32,20 @@ public final class rgbMeans extends kmeansCLass {
     public void startKmeans ()
     {
         boolean stable = true;
-        int[] red   = new int[this.nClusters];
-        int[] blue  = new int[this.nClusters];
-        int[] green = new int[this.nClusters];
-        int[] cntr  = new int[this.nClusters];
+        float[] red   = new float[this.nClusters];
+        float[] blue  = new float[this.nClusters];
+        float[] green = new float[this.nClusters];
+        float[] cntr  = new float[this.nClusters];
         
-        int[] ared   = new int[this.nClusters];
-        int[] ablue  = new int[this.nClusters];
-        int[] agreen = new int[this.nClusters];
+        float[] ared   = new float[this.nClusters];
+        float[] ablue  = new float[this.nClusters];
+        float[] agreen = new float[this.nClusters];
         
         for(int i = 0; i < this.nClusters; i++)
         {
-            red[i]      = 0;
-            blue[i]     = 0;
-            green[i]    = 0;
+            ared[i]      = 0;
+            ablue[i]     = 0;
+            agreen[i]    = 0;
         }
 
         do
@@ -62,12 +63,14 @@ public final class rgbMeans extends kmeansCLass {
                 for(int j = 0; j < this.bImg.getHeight(); j++)
                 {
                     int whatCluster = 0;
-                    rgbClass rgbColor = this.uClass.getColor(this.bImg, i, j);
-                    int cDistance = this.uClass.getDistance(rgbColor, this.rgbClusters[0]);
+                    Color rgbColor = this.uClass.getColor(this.bImg, i, j);
                     
-                    for(int k = 0; k < this.nClusters; k++)
+                    double cDistance = this.uClass.getDistance(rgbColor, this.rgbClusters[0]);
+                    whatCluster = 0;
+                    
+                    for(int k = 1; k < this.nClusters; k++)
                     {
-                        int tDistance = this.uClass.getDistance(rgbColor, this.rgbClusters[k]);
+                        double tDistance = this.uClass.getDistance(rgbColor, this.rgbClusters[k]);
                         if(tDistance < cDistance)
                         {
                             cDistance = tDistance;
@@ -86,15 +89,14 @@ public final class rgbMeans extends kmeansCLass {
             {
                 if(cntr[i] != 0)
                 {
-                    red[i] = (int) (red[i] / cntr[i]);
-                    blue[i] = (int) (blue[i] / cntr[i]);
-                    green[i] = (int) (green[i] / cntr[i]);
+                    red[i] = (red[i] / cntr[i]);
+                    blue[i] = (blue[i] / cntr[i]);
+                    green[i] = (green[i] / cntr[i]);
 
-                    this.rgbClusters[i] = new rgbClass(red[i], green[i], blue[i]);
+                    this.rgbClusters[i] = new Color(Math.round(red[i]), Math.round(green[i]), Math.round(blue[i]));
                 }   
             }
-            
-             
+                        
             stable = true;
             for(int i = 0; i < this.nClusters; i++)
             {
